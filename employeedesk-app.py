@@ -2,6 +2,7 @@ import streamlit as st
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from datetime import datetime
+import pandas as pd
 
 st.title("Employee Attendance 🚀")
 
@@ -31,13 +32,20 @@ if st.button("Save Employee"):
     else:
         st.error("Please fill all fields.")
 
+# -------------------- Step 2: Show Employee List --------------------
+if st.button("Employee List"):
+    employees = list(db.employees.find({}, {"_id": 0}))
+    if employees:
+        df_employees = pd.DataFrame(employees)
+        st.dataframe(df_employees)
+    else:
+        st.info("No employees found.")
+
 # -------------------- Step 3: Attendance --------------------
 st.subheader("Record Attendance")
 
 # Fetch employee list
 employee_list = list(db.employees.find({}, {"_id": 0, "employee_id": 1, "name": 1}))
-
-# Create dropdown for employees
 employee_options = [f"{emp['employee_id']} - {emp['name']}" for emp in employee_list]
 selected_employee = st.selectbox("Select Employee", ["--Select--"] + employee_options)
 
