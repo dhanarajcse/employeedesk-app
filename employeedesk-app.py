@@ -2,7 +2,7 @@ import streamlit as st
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-st.title("EmployeeDesk – Step 1: Employee Creation")
+st.title("Employee Creation")
 
 # MongoDB connection
 uri = st.secrets["MONGODB_URI"]
