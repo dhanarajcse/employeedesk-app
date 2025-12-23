@@ -2,14 +2,29 @@ import streamlit as st
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-st.title("EmployeeDesk")
+st.title("EmployeeDesk – Step 1: Employee Creation")
 
-try:
-    uri = st.secrets["MONGODB_URI"]
-    client = MongoClient(uri, server_api=ServerApi('1'))
-    client.admin.command("ping")
+# MongoDB connection
+uri = st.secrets["MONGODB_URI"]
+client = MongoClient(uri, server_api=ServerApi('1'))
+db = client["db_employeedesk"]
 
-    st.success("Connected to MongoDB Atlas successfully!")
+st.subheader("Add New Employee")
 
-except Exception as e:
-    st.error(f"MongoDB connection failed: {e}")
+employee_id = st.text_input("Employee ID")
+name = st.text_input("Employee Name")
+department = st.text_input("Department")
+
+if st.button("Save Employee"):
+    if employee_id and name and department:
+        if db.employees.count_documents({"employee_id": employee_id}) == 0:
+            db.employees.insert_one({
+                "employee_id": employee_id,
+                "name": name,
+                "department": department
+            })
+            st.success("Employee saved successfully!")
+        else:
+            st.warning("Employee ID already exists.")
+    else:
+        st.error("Please fill all fields.")
